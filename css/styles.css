@@ -1,0 +1,506 @@
+/* ==========================================================================
+   To Do List Life Dashboard — styles.css
+   Pure CSS, no external frameworks (Req 9.1, 9.3)
+   ========================================================================== */
+
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  background-color: #1a1b1e;
+  color: #c9d1d9;
+  min-height: 100vh;
+  line-height: 1.5;
+  /* Prevent horizontal overflow at any width ≥ 320 px (Req 9.6) */
+  overflow-x: hidden;
+}
+
+/* ── Typography helpers ───────────────────────────────────────────────────── */
+
+h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b949e;
+  margin-bottom: 1rem;
+}
+
+/* ── Buttons — shared base ────────────────────────────────────────────────── */
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: opacity 0.15s, background-color 0.15s;
+  white-space: nowrap;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button:not(:disabled):hover {
+  opacity: 0.85;
+}
+
+/* ── Inputs — shared base ─────────────────────────────────────────────────── */
+
+input[type="text"],
+input[type="url"] {
+  background-color: #0d1117;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+  min-width: 0; /* prevents flex overflow (Req 9.6) */
+  width: 100%;
+  transition: border-color 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus {
+  outline: none;
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+}
+
+/* ── Page layout ──────────────────────────────────────────────────────────── */
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+/* On wider viewports use a two-column layout */
+@media (min-width: 640px) {
+  main {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Greeting spans both columns */
+  #greeting-widget {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Widget card ──────────────────────────────────────────────────────────── */
+
+section {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 1.5rem;
+  min-width: 0; /* prevents grid blowout (Req 9.6) */
+}
+
+/* ==========================================================================
+   Storage Warning Banner  (Req 8.2)
+   ========================================================================== */
+
+#storage-warning {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: #3d1f00;
+  border-bottom: 2px solid #d4820a;
+  color: #f0b429;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  /* hidden attribute keeps it invisible by default; JS removes it */
+}
+
+#storage-warning[hidden] {
+  display: none;
+}
+
+#storage-warning-dismiss {
+  background-color: transparent;
+  color: #f0b429;
+  border: 1px solid #f0b429;
+  padding: 0.25rem 0.6rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+#storage-warning-dismiss:hover {
+  background-color: rgba(240, 180, 41, 0.15);
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Greeting Widget  (Req 1)
+   ========================================================================== */
+
+#greeting-widget header {
+  text-align: center;
+}
+
+/* Large clock display */
+#greeting-time {
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 700;
+  color: #e6edf3;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+/* Subdued date */
+#greeting-date {
+  font-size: 0.95rem;
+  color: #8b949e;
+  margin-top: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Prominent greeting */
+#greeting-message {
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
+  font-weight: 600;
+  color: #58a6ff;
+}
+
+/* ==========================================================================
+   Focus Timer Widget  (Req 2)
+   ========================================================================== */
+
+#focus-timer-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* MM:SS countdown display */
+#timer-display {
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-weight: 700;
+  color: #e6edf3;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+/* Expired state — red + pulse animation (Req 2.6) */
+#timer-display.expired {
+  color: #f85149;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Timer controls row */
+#timer-controls {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Start — green */
+#timer-start {
+  background-color: #238636;
+  color: #ffffff;
+}
+
+#timer-start:not(:disabled):hover {
+  background-color: #2ea043;
+  opacity: 1;
+}
+
+/* Stop — amber */
+#timer-stop {
+  background-color: #9e6a03;
+  color: #ffffff;
+}
+
+#timer-stop:not(:disabled):hover {
+  background-color: #bb8009;
+  opacity: 1;
+}
+
+/* Reset — neutral/muted */
+#timer-reset {
+  background-color: #30363d;
+  color: #c9d1d9;
+  border: 1px solid #484f58;
+}
+
+#timer-reset:not(:disabled):hover {
+  background-color: #3d444d;
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Task List Widget  (Req 3–5)
+   ========================================================================== */
+
+/* Add-task form */
+#task-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+#task-form label {
+  /* Visually hidden — kept for accessibility */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+#task-input {
+  flex: 1 1 0;
+}
+
+#task-submit {
+  background-color: #1f6feb;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+#task-submit:not(:disabled):hover {
+  background-color: #388bfd;
+  opacity: 1;
+}
+
+/* Inline error message */
+#task-error {
+  color: #f85149;
+  font-size: 0.82rem;
+  min-height: 1.2em;
+  margin-bottom: 0.75rem;
+}
+
+/* Task list */
+#task-container {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#task-container li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  min-width: 0; /* prevents overflow (Req 9.6) */
+  flex-wrap: wrap;
+}
+
+/* Checkbox */
+#task-container li input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  accent-color: #238636;
+  cursor: pointer;
+}
+
+/* Description span */
+#task-container li span {
+  flex: 1 1 0;
+  min-width: 0;
+  word-break: break-word;
+  font-size: 0.9rem;
+  color: #c9d1d9;
+}
+
+/* Completed task — strikethrough (Req 5.2) */
+#task-container li span.completed {
+  text-decoration: line-through;
+  color: #8b949e;
+}
+
+/* Task action buttons */
+#task-container li button {
+  flex-shrink: 0;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+/* Edit button */
+#task-container li button:first-of-type {
+  background-color: #30363d;
+  color: #c9d1d9;
+  border: 1px solid #484f58;
+}
+
+/* Delete button (last button in normal view) */
+#task-container li button:last-of-type {
+  background-color: #3d1a1a;
+  color: #f85149;
+  border: 1px solid #5c2222;
+}
+
+/* Confirm button (edit mode) */
+#task-container li button[data-action="confirm-edit"] {
+  background-color: #238636;
+  color: #ffffff;
+  border: none;
+}
+
+/* Cancel button (edit mode) */
+#task-container li button[data-action="cancel-edit"] {
+  background-color: #30363d;
+  color: #c9d1d9;
+  border: 1px solid #484f58;
+}
+
+/* Inline edit input that replaces the description span */
+#task-container li input[type="text"] {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* ==========================================================================
+   Quick Links Widget  (Req 6–7)
+   ========================================================================== */
+
+/* Add-link form */
+#link-form {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.6rem;
+  row-gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+#link-form label {
+  font-size: 0.85rem;
+  color: #8b949e;
+  white-space: nowrap;
+}
+
+#link-submit {
+  grid-column: 1 / -1;
+  background-color: #1f6feb;
+  color: #ffffff;
+  width: 100%;
+}
+
+#link-submit:not(:disabled):hover {
+  background-color: #388bfd;
+  opacity: 1;
+}
+
+/* Inline error message */
+#link-error {
+  color: #f85149;
+  font-size: 0.82rem;
+  min-height: 1.2em;
+  margin-bottom: 0.75rem;
+}
+
+/* Links container — wrapping flex grid */
+#links-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Individual link item */
+.link-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Link open button */
+.link-item > button:first-child {
+  background-color: #1f6feb;
+  color: #ffffff;
+  font-size: 0.82rem;
+  padding: 0.3rem 0.7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* Link delete button */
+.link-item > button:last-child {
+  background-color: transparent;
+  color: #f85149;
+  border: 1px solid #5c2222;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  flex-shrink: 0;
+}
+
+.link-item > button:last-child:hover {
+  background-color: #3d1a1a;
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Responsive — ensure no horizontal scroll at ≥ 320 px  (Req 9.6)
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  #task-form {
+    flex-wrap: wrap;
+  }
+
+  #task-input {
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  #task-submit {
+    width: 100%;
+    flex-basis: 100%;
+  }
+
+  .link-item > button:first-child {
+    max-width: 130px;
+  }
+}
